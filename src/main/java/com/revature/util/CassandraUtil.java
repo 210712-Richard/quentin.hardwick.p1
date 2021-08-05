@@ -19,7 +19,7 @@ public class CassandraUtil {
 		log.trace("Establishing connection with Cassandra.");
 		DriverConfigLoader loader = DriverConfigLoader.fromClasspath("application.conf");
 		try {
-			this.session = CqlSession.builder().withConfigLoader(loader).withKeyspace("TRMS").build();
+			this.session = CqlSession.builder().withConfigLoader(loader).withKeyspace("\"TRMS\"").build();
 		} catch (Exception e) {
 			log.error("Method threw exception: " + e);
 			for (StackTraceElement element : e.getStackTrace()) {

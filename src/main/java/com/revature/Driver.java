@@ -10,8 +10,27 @@ import io.javalin.plugin.json.JavalinJackson;
 
 public class Driver {
 	public static void main(String[] args) {
-		DatabaseCreator.createTables(); //create a tables in keyspace
+		instantiateDatabase(); //create a tables in keyspace
 		//javalin();
+	}
+
+	private static void instantiateDatabase() {
+		DatabaseCreator.dropTables();
+		try {
+			Thread.sleep(30000); //Wait 30 seconds to ensure AWS finishes deleting tables
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		DatabaseCreator.createTables();
+		try {
+			Thread.sleep(20000); //Wait 20 seconds to ensure AWS finishes creating tables
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		DatabaseCreator.populateUserTable();
+		System.exit(0);
 	}
 
 	private static void javalin() {
