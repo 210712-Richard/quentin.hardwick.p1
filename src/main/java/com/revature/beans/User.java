@@ -1,14 +1,18 @@
 package com.revature.beans;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
 	
-	String fname;
-	String lname;
+	private static final long serialVersionUID = 1L;
+	
+	String firstName;
+	String lastName;
 	String username;
 	String email;
 	Double availableReimbursement;
-	User supervisor;
-	User departmentHead;
+	String supervisor;
+	String departmentHead;
 	UserType type;
 	//position;  (just for fun)
 	
@@ -20,34 +24,42 @@ public class User {
 	
 	public User(String fname, String lname) {
 		this();
-		this.fname = fname;
-		this.lname = lname;
+		this.firstName = fname;
+		this.lastName = lname;
 	}
 	
-	public User(String fname, String lname, String username, String email, User supervisor, User departmentHead) {
+	public User(String fname, String lname, String username, String email) {
 		this();
-		this.fname = fname;
-		this.lname = lname;
+		this.firstName = fname;
+		this.lastName = lname;
+		this.username = username;
+		this.email = email;
+	}
+	
+	public User(String fname, String lname, String username, String email, String supervisor, String departmentHead) {
+		this();
+		this.firstName = fname;
+		this.lastName = lname;
 		this.username = username;
 		this.email = email;
 		this.supervisor = supervisor;
 		this.departmentHead = departmentHead;
 	}
 //********************   Getters and Setters   *********************************
-	public String getFname() {
-		return fname;
+	public String getFirstName() {
+		return firstName;
 	}
 
-	public void setFname(String fname) {
-		this.fname = fname;
+	public void setFirstName(String fname) {
+		this.firstName = fname;
 	}
 
-	public String getLname() {
-		return lname;
+	public String getLastName() {
+		return lastName;
 	}
 
-	public void setLname(String lname) {
-		this.lname = lname;
+	public void setLastName(String lname) {
+		this.lastName = lname;
 	}
 
 	public String getUsername() {
@@ -74,19 +86,19 @@ public class User {
 		this.availableReimbursement = availableReimbursement;
 	}
 
-	public User getSupervisor() {
+	public String getSupervisor() {
 		return supervisor;
 	}
 
-	public void setSupervisor(User supervisor) {
+	public void setSupervisor(String supervisor) {
 		this.supervisor = supervisor;
 	}
 
-	public User getDepartmentHead() {
+	public String getDepartmentHead() {
 		return departmentHead;
 	}
 
-	public void setDepartmentHead(User departmentHead) {
+	public void setDepartmentHead(String departmentHead) {
 		this.departmentHead = departmentHead;
 	}
 
@@ -105,8 +117,8 @@ public class User {
 		result = prime * result + ((availableReimbursement == null) ? 0 : availableReimbursement.hashCode());
 		result = prime * result + ((departmentHead == null) ? 0 : departmentHead.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
-		result = prime * result + ((fname == null) ? 0 : fname.hashCode());
-		result = prime * result + ((lname == null) ? 0 : lname.hashCode());
+		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((supervisor == null) ? 0 : supervisor.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
 		result = prime * result + ((username == null) ? 0 : username.hashCode());
@@ -137,15 +149,15 @@ public class User {
 				return false;
 		} else if (!email.equals(other.email))
 			return false;
-		if (fname == null) {
-			if (other.fname != null)
+		if (firstName == null) {
+			if (other.firstName != null)
 				return false;
-		} else if (!fname.equals(other.fname))
+		} else if (!firstName.equals(other.firstName))
 			return false;
-		if (lname == null) {
-			if (other.lname != null)
+		if (lastName == null) {
+			if (other.lastName != null)
 				return false;
-		} else if (!lname.equals(other.lname))
+		} else if (!lastName.equals(other.lastName))
 			return false;
 		if (supervisor == null) {
 			if (other.supervisor != null)
@@ -164,7 +176,7 @@ public class User {
 //******************************   toString   **********************************
 	@Override
 	public String toString() {
-		return "User [fname=" + fname + ", lname=" + lname + ", username=" + username + ", email=" + email
+		return "User [fname=" + firstName + ", lname=" + lastName + ", username=" + username + ", email=" + email
 				+ ", availableReimbursement=" + availableReimbursement + ", supervisor=" + supervisor
 				+ ", departmentHead=" + departmentHead + ", type=" + type + "]";
 	}

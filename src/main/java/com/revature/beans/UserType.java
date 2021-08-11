@@ -1,5 +1,7 @@
 package com.revature.beans;
 
-public enum UserType {
+import java.io.Serializable;
+
+public enum UserType implements Serializable{
 	EMPLOYEE, BENCO
 }

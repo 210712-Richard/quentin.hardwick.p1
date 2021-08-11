@@ -1,17 +1,26 @@
 package com.revature;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.revature.controllers.UserController;
+import com.revature.controllers.UserControllerImpl;
+import com.revature.factory.BeanFactory;
 import com.revature.util.CassandraUtil;
 
 import io.javalin.Javalin;
 import io.javalin.plugin.json.JavalinJackson;
 
 public class Driver {
+	
+	private static Logger log = LogManager.getLogger(Driver.class);
+	
 	public static void main(String[] args) {
-		instantiateDatabase(); //create a tables in keyspace
-		//javalin();
+		//instantiateDatabase(); //create a tables in keyspace
+		javalin();
 	}
 
 	private static void instantiateDatabase() {
@@ -43,6 +52,16 @@ public class Driver {
 		// Starts the Javalin Framework
 		Javalin app = Javalin.create().start(8080);
 		
+		UserController uc = (UserController) BeanFactory.getFactory().get(UserController.class, UserControllerImpl.class);
+		
+		// As a user I can log in
+		app.post("/users", uc::login);
+		
+		//As a user I can log out
+		app.delete("/users", uc::logout);
+		
+		//As a user I check my remaining available compensation
+		app.get("/users/:username/compensation", uc::getAvailableCompensation);
 	}
 
 }
