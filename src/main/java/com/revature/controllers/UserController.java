@@ -9,4 +9,12 @@ public interface UserController {
 	void logout(Context ctx);
 	
 	void getAvailableCompensation(Context ctx);
+	
+	void generateForm(Context ctx);
+
+	void supervisorApproval(Context ctx);
+
+	void departmentApproval(Context ctx);
+
+	void bencoApproval(Context ctx);
 }

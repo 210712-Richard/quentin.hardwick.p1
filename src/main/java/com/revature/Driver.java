@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.revature.controllers.FormController;
+import com.revature.controllers.FormControllerImpl;
 import com.revature.controllers.UserController;
 import com.revature.controllers.UserControllerImpl;
 import com.revature.factory.BeanFactory;
@@ -33,7 +35,7 @@ public class Driver {
 		
 		DatabaseCreator.createTables();
 		try {
-			Thread.sleep(20000); //Wait 20 seconds to ensure AWS finishes creating tables
+			Thread.sleep(40000); //Wait 40 seconds to ensure AWS finishes creating tables
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -53,6 +55,7 @@ public class Driver {
 		Javalin app = Javalin.create().start(8080);
 		
 		UserController uc = (UserController) BeanFactory.getFactory().get(UserController.class, UserControllerImpl.class);
+		FormController fc = (FormController) BeanFactory.getFactory().get(FormController.class, FormControllerImpl.class);
 		
 		// As a user I can log in
 		app.post("/users", uc::login);
@@ -62,6 +65,15 @@ public class Driver {
 		
 		//As a user I check my remaining available compensation
 		app.get("/users/:username/compensation", uc::getAvailableCompensation);
+		
+		//As a user I can submit a Tuition Reimbursement Form
+		app.post("/users/:username/forms", uc::generateForm);
+		
+		app.post("/users/:username/awaitingapproval/:id", uc::supervisorApproval);
+		
+		app.post("users/:username/awaitingapproval/:id", uc::departmentApproval);
+		
+		app.post("/users/:username/awaitingapproval/:id", uc::bencoApproval);
 	}
 
 }

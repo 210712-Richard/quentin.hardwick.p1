@@ -1,27 +1,43 @@
 package com.revature.beans;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class User implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	String firstName;
-	String lastName;
-	String username;
-	String email;
-	Double availableReimbursement;
-	String supervisor;
-	String departmentHead;
-	UserType type;
+	private String firstName;
+	private String lastName;
+	private String username;
+	private String email;
+	private Double availableReimbursement;
+	private String supervisor;
+	private String departmentHead;
+	private UserType type;
+	private List<Form> forms;
+	private List<Form> completedForms;
+	private List<Form> awaitingApproval;
 	//position;  (just for fun)
 	
 	public User() {
 		super();
 		this.availableReimbursement = 1000.00;
 		this.type = UserType.EMPLOYEE;
+		this.forms = new ArrayList<Form>();
+		this.completedForms = new ArrayList<Form>();
+		this.awaitingApproval = new ArrayList<Form>();
 	}
 	
+	public List<Form> getAwaitingApproval() {
+		return awaitingApproval;
+	}
+
+	public void setAwaitingApproval(List<Form> awaitingApproval) {
+		this.awaitingApproval = awaitingApproval;
+	}
+
 	public User(String fname, String lname) {
 		this();
 		this.firstName = fname;
@@ -109,15 +125,33 @@ public class User implements Serializable {
 	public void setType(UserType type) {
 		this.type = type;
 	}
-//*********************   hashCode and equals   ********************************
+	public List<Form> getForms() {
+		return forms;
+	}
+
+	public void setForms(List<Form> forms) {
+		this.forms = forms;
+	}
+
+	public List<Form> getCompletedForms() {
+		return completedForms;
+	}
+
+	public void setCompletedForms(List<Form> completedForms) {
+		this.completedForms = completedForms;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((availableReimbursement == null) ? 0 : availableReimbursement.hashCode());
+		result = prime * result + ((awaitingApproval == null) ? 0 : awaitingApproval.hashCode());
+		result = prime * result + ((completedForms == null) ? 0 : completedForms.hashCode());
 		result = prime * result + ((departmentHead == null) ? 0 : departmentHead.hashCode());
 		result = prime * result + ((email == null) ? 0 : email.hashCode());
 		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
+		result = prime * result + ((forms == null) ? 0 : forms.hashCode());
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((supervisor == null) ? 0 : supervisor.hashCode());
 		result = prime * result + ((type == null) ? 0 : type.hashCode());
@@ -139,6 +173,16 @@ public class User implements Serializable {
 				return false;
 		} else if (!availableReimbursement.equals(other.availableReimbursement))
 			return false;
+		if (awaitingApproval == null) {
+			if (other.awaitingApproval != null)
+				return false;
+		} else if (!awaitingApproval.equals(other.awaitingApproval))
+			return false;
+		if (completedForms == null) {
+			if (other.completedForms != null)
+				return false;
+		} else if (!completedForms.equals(other.completedForms))
+			return false;
 		if (departmentHead == null) {
 			if (other.departmentHead != null)
 				return false;
@@ -153,6 +197,11 @@ public class User implements Serializable {
 			if (other.firstName != null)
 				return false;
 		} else if (!firstName.equals(other.firstName))
+			return false;
+		if (forms == null) {
+			if (other.forms != null)
+				return false;
+		} else if (!forms.equals(other.forms))
 			return false;
 		if (lastName == null) {
 			if (other.lastName != null)
@@ -173,13 +222,13 @@ public class User implements Serializable {
 			return false;
 		return true;
 	}
-//******************************   toString   **********************************
-	@Override
-	public String toString() {
-		return "User [fname=" + firstName + ", lname=" + lastName + ", username=" + username + ", email=" + email
-				+ ", availableReimbursement=" + availableReimbursement + ", supervisor=" + supervisor
-				+ ", departmentHead=" + departmentHead + ", type=" + type + "]";
-	}
+@Override
+public String toString() {
+	return "User [firstName=" + firstName + ", lastName=" + lastName + ", username=" + username + ", email=" + email
+			+ ", availableReimbursement=" + availableReimbursement + ", supervisor=" + supervisor + ", departmentHead="
+			+ departmentHead + ", type=" + type + ", forms=" + forms + ", completedForms=" + completedForms
+			+ ", awaitingApproval=" + awaitingApproval + "]";
+}
 	
 	
 	

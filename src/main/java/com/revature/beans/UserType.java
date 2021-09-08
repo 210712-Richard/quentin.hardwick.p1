@@ -3,5 +3,5 @@ package com.revature.beans;
 import java.io.Serializable;
 
 public enum UserType implements Serializable{
-	EMPLOYEE, BENCO
+	EMPLOYEE, DEPARTMENT_HEAD, BENCO
 }

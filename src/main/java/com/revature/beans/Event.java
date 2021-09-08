@@ -1,107 +1,33 @@
 package com.revature.beans;
 
-public class Event {
-	private EventType type;
-	private String name;
-	private double cost;
-	private double coverage;
-	private Boolean approved;
-	private String grade;
+public enum Event {
+	COURSE(0.8, "Letter Grade"), SEMINAR(0.6, "Presentation"), CERT_PREP_CLASS(0.75, "Letter Grade"), CERTIFICATION(1.0, "Pass/Fail"), 
+	TRAINING(0.9, "Pass/Fail"), OTHER(0.3, "Varies");
 	
-	Event(String name, double cost){
-		this.name = name;
-		this.cost = cost;
-		this.approved = false;
+	private Double coverage;
+	private String gradingFormat;
+	
+	Event(Double coverage, String format){
+		this.coverage = coverage;
+		this.gradingFormat = format;
 	}
 
-	public EventType getType() {
-		return type;
-	}
-
-	public void setType(EventType type) {
-		this.type = type;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public double getCost() {
-		return cost;
-	}
-
-	public void setCost(double cost) {
-		this.cost = cost;
-	}
-
-	public double getCoverage() {
+	public Double getCoverage() {
 		return coverage;
 	}
 
-	public void setCoverage(double coverage) {
+	public void setCoverage(Double coverage) {
 		this.coverage = coverage;
 	}
 
-	public Boolean getApproved() {
-		return approved;
+	public String getGradingFormat() {
+		return gradingFormat;
 	}
 
-	public void setApproved(Boolean approved) {
-		this.approved = approved;
+	public void setGradingFormat(String gradingFormat) {
+		this.gradingFormat = gradingFormat;
 	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((approved == null) ? 0 : approved.hashCode());
-		long temp;
-		temp = Double.doubleToLongBits(cost);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(coverage);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((type == null) ? 0 : type.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Event other = (Event) obj;
-		if (approved == null) {
-			if (other.approved != null)
-				return false;
-		} else if (!approved.equals(other.approved))
-			return false;
-		if (Double.doubleToLongBits(cost) != Double.doubleToLongBits(other.cost))
-			return false;
-		if (Double.doubleToLongBits(coverage) != Double.doubleToLongBits(other.coverage))
-			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (type != other.type)
-			return false;
-		return true;
-	}
-
-	@Override
-	public String toString() {
-		return "Event [type=" + type + ", name=" + name + ", cost=" + cost + ", coverage=" + coverage + ", approved="
-				+ approved + "]";
-	}
+	
 	
 	
 }
