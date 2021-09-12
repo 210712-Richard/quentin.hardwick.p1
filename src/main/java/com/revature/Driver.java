@@ -21,7 +21,7 @@ public class Driver {
 	private static Logger log = LogManager.getLogger(Driver.class);
 	
 	public static void main(String[] args) {
-		//instantiateDatabase(); //create a tables in keyspace
+		//instantiateDatabase(); //create tables in keyspace
 		javalin();
 	}
 
@@ -67,13 +67,14 @@ public class Driver {
 		app.get("/users/:username/compensation", uc::getAvailableCompensation);
 		
 		//As a user I can submit a Tuition Reimbursement Form
-		app.post("/users/:username/forms", uc::generateForm);
+		app.post("/users/:username/forms", uc::submitForm);
 		
-		app.post("/users/:username/awaitingapproval/:id", uc::supervisorApproval);
+		//As a user I can approve submissions
+		app.post("/users/:username/awaitingapproval/:id", uc::approveForm);
 		
-		app.post("users/:username/awaitingapproval/:id", uc::departmentApproval);
 		
-		app.post("/users/:username/awaitingapproval/:id", uc::bencoApproval);
+		//As a user, I can view all forms awaiting my authorization
+		app.get("/users/:username/awaitingapproval", uc::viewAwaitingApprovals);
 	}
 
 }

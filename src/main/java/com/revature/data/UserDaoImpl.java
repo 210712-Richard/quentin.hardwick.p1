@@ -42,9 +42,33 @@ public class UserDaoImpl implements UserDao{
 	@Override
 	public User getUser(String username) {
 		
-		String query = "Select username, type, lastName, firstName, email, supervisor, departmentHead, availableReimbursement from user where username = ?";
+		String query = "Select * FROM user where username = ?";
+		//String query = "Select username, type, lastName, firstName, email, supervisor, departmentHead, availableReimbursement from user where username = ?";
 		SimpleStatement s = new SimpleStatementBuilder(query).build();
 		BoundStatement bound = session.prepare(s).bind(username);
+		ResultSet rs = session.execute(bound);
+		Row row = rs.one();
+		if(row == null) {
+			return null;
+		}
+		User u = new User();
+		u.setUsername(row.getString("username"));
+		u.setType(UserType.valueOf(row.getString("type")));
+		u.setFirstName(row.getString("firstName"));
+		u.setLastName(row.getString("lastName"));
+		u.setEmail(row.getString("email"));
+		u.setSupervisor(row.getString("supervisor"));
+		u.setDepartmentHead(row.getString("departmentHead"));
+		u.setAvailableReimbursement(row.getDouble("availableReimbursement"));
+		return u;
+	}
+	
+	@Override
+	public User getUserByName(String name) {
+		String query = "Select * FROM user where lastname = ? ALLOW FILTERING";
+		//String query = "Select username, type, lastName, firstName, email, supervisor, departmentHead, availableReimbursement from user where username = ?";
+		SimpleStatement s = new SimpleStatementBuilder(query).build();
+		BoundStatement bound = session.prepare(s).bind(name);
 		ResultSet rs = session.execute(bound);
 		Row row = rs.one();
 		if(row == null) {
@@ -87,9 +111,9 @@ public class UserDaoImpl implements UserDao{
 	@Override
 	public void updateUser(User u) {
 		log.debug("UserDao update method called. Generating query");
-		String query = "Update user set type = ?, firstName = ?, lastName = ?, email = ?, "
+		String query = "Update user set type = ?, firstName = ?, email = ?, "
 				+ "supervisor = ?, departmentHead = ?, availableReimbursement = ?, "
-				+ "pendingforms = ?, completedforms = ?, awaitingapproval = ? where username = ?;";
+				+ "pendingforms = ?, completedforms = ?, awaitingapproval = ? where username = ? and lastName = ?;";
 		log.debug("Iterating through pending forms");
 		List<UUID> forms = u.getForms().stream()
 				.filter(f -> f != null)
@@ -110,9 +134,9 @@ public class UserDaoImpl implements UserDao{
 		log.debug("User: " + u);
 		log.debug("Generating BoundStatement");
 		BoundStatement bound = session.prepare(s)
-				.bind(u.getType().toString(), u.getFirstName(), u.getLastName(), u.getEmail(),
-						u.getSupervisor(), u.getDepartmentHead(), u.getAvailableReimbursement(), 
-						forms, completedforms, awaitingapproval, u.getUsername());
+				.bind(u.getType().toString(), u.getFirstName(), u.getEmail(), u.getSupervisor(), 
+						u.getDepartmentHead(), u.getAvailableReimbursement(), forms, completedforms, 
+						awaitingapproval, u.getUsername(), u.getLastName());
 		log.debug("Bound Statement: " + bound);
 		log.debug("Executing");
 		session.execute(bound);
@@ -167,28 +191,5 @@ public class UserDaoImpl implements UserDao{
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	public User getUserByName(String name) {
-		String query = "Select username, type, lastName, firstName, email, supervisor, departmentHead, availableReimbursement from user where lastName = ?";
-		SimpleStatement s = new SimpleStatementBuilder(query).build();
-		BoundStatement bound = session.prepare(s).bind("lastName");
-		ResultSet rs = session.execute(bound);
-		Row row = rs.one();
-		if(row == null) {
-			return null;
-		}
-		User u = new User();
-		u.setUsername(row.getString("username"));
-		u.setType(UserType.valueOf(row.getString("type")));
-		u.setFirstName(row.getString("firstName"));
-		u.setLastName(row.getString("lastName"));
-		u.setEmail(row.getString("email"));
-		u.setSupervisor(row.getString("supervisor"));
-		u.setDepartmentHead(row.getString("departmentHead"));
-		u.setAvailableReimbursement(row.getDouble("availableReimbursement"));
-		return u;
-	}
-	
 
 }

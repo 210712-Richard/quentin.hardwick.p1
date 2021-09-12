@@ -39,7 +39,9 @@ public class UserServiceImpl implements UserService{
 	
 	@Override
 	public User getUserByName(String name) {
-		return ud.getUserByName(name);
+		String[] nameArray = name.split(" ");
+		String lastName = nameArray[1];
+		return ud.getUserByName(lastName);
 	}
 
 

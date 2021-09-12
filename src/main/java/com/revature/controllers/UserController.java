@@ -10,11 +10,9 @@ public interface UserController {
 	
 	void getAvailableCompensation(Context ctx);
 	
-	void generateForm(Context ctx);
+	void submitForm(Context ctx);
 
-	void supervisorApproval(Context ctx);
+	void approveForm(Context ctx);
 
-	void departmentApproval(Context ctx);
-
-	void bencoApproval(Context ctx);
+	void viewAwaitingApprovals(Context ctx);
 }

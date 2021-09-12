@@ -53,7 +53,7 @@ public class UserControllerImpl implements UserController {
 	@Override
 	public void getAvailableCompensation(Context ctx) {
 		String username = ctx.pathParam("username");
-		User loggedUser = (User) ctx.sessionAttribute("loggedUser");
+		User loggedUser = ctx.sessionAttribute("loggedUser");
 		if(loggedUser == null || !loggedUser.getUsername().equals(username)) {
 			ctx.status(403);
 			return;
@@ -61,8 +61,9 @@ public class UserControllerImpl implements UserController {
 		ctx.json(loggedUser.getAvailableReimbursement());
 	}
 	
+	// As a User I can submit a form to apply for reimbursement
 	@Override
-	public void generateForm(Context ctx) {
+	public void submitForm(Context ctx) {
 		User loggedUser = ctx.sessionAttribute("loggedUser");
 		if (loggedUser == null) {
 			ctx.status(401);
@@ -78,88 +79,99 @@ public class UserControllerImpl implements UserController {
 		form = fs.submitForm(form);
 		loggedUser.getForms().add(form);
 		log.debug("LoggedUser's Form: " + loggedUser.getForms());
+		// If loggedUser is a DepartmentHead, form goes straight to BenCo
 		if(loggedUser.getType().equals(UserType.DEPARTMENT_HEAD)) {
 			log.debug("LoggedUser is a Department Head");
 			form.setSupervisorApproval(true);
 			form.setDepartmentApproval(true);
-			//fs.updateForm(form);
-			User u = us.getUser("sol");
-			u.getAwaitingApproval().add(form);
+			fs.updateForm(form);
+			User benco = us.getUser("sol");
+			benco.getAwaitingApproval().add(form);
+			us.updateUser(benco);
+			us.submitForm(loggedUser);
+			ctx.json(form);
+			return;
 		}
+		// If FormSubmitter's supervisor is a DepartmentHead, supervisor approval is automatically true
+		else if(loggedUser.getDepartmentHead().equals(loggedUser.getSupervisor())) {
+			form.setSupervisorApproval(true);
+			fs.updateForm(form);
+		}
+		User supervisor = us.getUserByName(loggedUser.getSupervisor());
+		supervisor.getAwaitingApproval().add(form);
+		us.updateUser(supervisor);
 		log.debug(loggedUser);
 		us.submitForm(loggedUser);
 		ctx.json(form);
 	}
 	
+	// As a supervisor I can approve the reimbursement forms of my employees and then pass them to the Department Head
 	@Override
-	public void supervisorApproval(Context ctx) {
-		User loggedUser = ctx.sessionAttribute("loggedUser");
-		if (loggedUser == null) {
+	public void approveForm(Context ctx) {
+		//Authentication
+		User approver = ctx.sessionAttribute("loggedUser");
+		if (approver == null) {
 			ctx.status(401);
 			return;
 		}
 		String username = ctx.pathParam("username");
+		if (!approver.getUsername().equals(username)) {
+			ctx.status(403);
+			return;
+		}
+		// Implementation
+		String id = ctx.pathParam("id");
+		Form form = fs.getForm(UUID.fromString(id));
+		approver.getAwaitingApproval().remove(form);
+		us.updateUser(approver);
+		// If approver is just the direct supervisor
+		if (!approver.getType().equals(UserType.DEPARTMENT_HEAD) && !approver.getType().equals(UserType.BENCO)) {
+			form.setSupervisorApproval(true);
+			User departmentHead = us.getUserByName(approver.getDepartmentHead());
+			departmentHead.getAwaitingApproval().add(form);
+			us.updateUser(departmentHead);
+		}
+		// If the approver is a department head but not a benco
+		if (approver.getType().equals(UserType.DEPARTMENT_HEAD) && !approver.getType().equals(UserType.BENCO)) {
+			form.setDepartmentApproval(true);
+			User benco = us.getUser("sol");
+			benco.getAwaitingApproval().add(form);
+			us.updateUser(benco);
+		}
+		// if the approver is a BenCo
+		if (approver.getType().equals(UserType.BENCO)) {
+			form.setBencoApproval(true);
+			User formSubmitter = us.getUserByName(form.getName());
+			if (formSubmitter.getAvailableReimbursement() >= form.getCompensation()) {
+				formSubmitter.setAvailableReimbursement(formSubmitter.getAvailableReimbursement() - form.getCompensation());
+			}
+			else {
+				formSubmitter.setAvailableReimbursement(0.00);
+			}
+			formSubmitter.getAwaitingApproval().remove(form);
+			formSubmitter.getCompletedForms().add(form);
+			us.updateUser(formSubmitter);
+		}
+		
+		fs.updateForm(form);
+		ctx.json(form);
+	}
+	
+	@Override
+	public void viewAwaitingApprovals(Context ctx) {
+		String username = ctx.pathParam("username");
+		User loggedUser = ctx.sessionAttribute("loggedUser");
+		
+		if (loggedUser == null) {
+			ctx.status(401);
+			return;
+		}
 		if (!loggedUser.getUsername().equals(username)) {
 			ctx.status(403);
 			return;
 		}
 		
-		String id = ctx.pathParam("id");
-		Form form = fs.getForm(UUID.fromString(id));
-		form.setSupervisorApproval(true);
-		if (loggedUser.getType().equals(UserType.DEPARTMENT_HEAD)) {
-			form.setDepartmentApproval(true);
-		}
-		if(loggedUser.getType().equals(UserType.BENCO)) {
-			form.setBencoApproval(true);
-			User u = us.getUserByName(form.getName().split(" ")[1]);
-			if (u.getAvailableReimbursement()>= form.getCost()) {
-				u.setAvailableReimbursement(u.getAvailableReimbursement() - form.getCost());
-			}
-			else {
-				u.setAvailableReimbursement(0.00);
-			}
-			us.updateUser(u);
-		}
-		//fs.updateForm(form);
-		ctx.json(form);
-		
+		ctx.json(loggedUser.getAwaitingApproval());
 	}
-
-	@Override
-	public void departmentApproval(Context ctx) {
-		User loggedUser = ctx.sessionAttribute("loggedUser");
-		if (loggedUser == null) {
-			ctx.status(401);
-			return;
-		}
-		String username = ctx.pathParam("username");
-		if (!loggedUser.getUsername().equals(username) || !loggedUser.getType().equals(UserType.DEPARTMENT_HEAD)) {
-			ctx.status(403);
-			return;
-		}
-		
-		
-	}
-
-	@Override
-	public void bencoApproval(Context ctx) {
-		User loggedUser = ctx.sessionAttribute("loggedUser");
-		if (loggedUser == null) {
-			ctx.status(401);
-			return;
-		}
-		String username = ctx.pathParam("username");
-		if (!loggedUser.getUsername().equals(username) || !loggedUser.getType().equals(UserType.BENCO)) {
-			ctx.status(403);
-			return;
-		}
-		String id = ctx.pathParam("id");
-		Form form = fs.getForm(UUID.fromString(id));
-		form.setBencoApproval(true);
-		
-	}
-
-
 
 }

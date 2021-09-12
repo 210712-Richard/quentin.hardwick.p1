@@ -25,7 +25,7 @@ public class DatabaseCreator {
 		StringBuilder sb = new StringBuilder("CREATE TABLE IF NOT EXISTS User (")
 				.append("username text, type text, lastName text, firstName text, ")
 				.append("email text, supervisor text, departmentHead text, availableReimbursement double, ")
-				.append("pendingForms list<uuid>, completedForms list<uuid>, awaitingapproval list<uuid>, PRIMARY KEY(username) );");
+				.append("pendingForms list<uuid>, completedForms list<uuid>, awaitingapproval list<uuid>, PRIMARY KEY(username, lastName) );");
 		
 		CassandraUtil.getInstance().getSession().execute(sb.toString());
 //*******************   Pending Forms Table   **********************************
@@ -33,7 +33,7 @@ public class DatabaseCreator {
 				.append("id uuid, name text, date date, time time, location text, ")
 				.append("description text, cost double, grade text, type text, justification text, ")
 				.append("attachment text, supervisorApproval boolean, departmentHeadApproval boolean, ")
-				.append("bencoApproval boolean, PRIMARY KEY(id, name) );");
+				.append("bencoApproval boolean, PRIMARY KEY(id, name)); ");
 		
 		CassandraUtil.getInstance().getSession().execute(sb.toString());
 //*******************   Completed Forms Table   ********************************
@@ -41,7 +41,7 @@ public class DatabaseCreator {
 				.append("id uuid, name text, date date, time time, location text, ")
 				.append("description text, cost double, grade text, type text, justification text, ")
 				.append("attachment text, supervisorApproval boolean, departmentHeadApproval boolean, ")
-				.append("bencoApproval boolean, PRIMARY KEY(id, name) );");
+				.append("bencoApproval boolean, PRIMARY KEY(id, name)); ");
 		
 		CassandraUtil.getInstance().getSession().execute(sb.toString());
 				}

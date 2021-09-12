@@ -40,9 +40,10 @@ public class FormDaoImpl implements FormDao{
 
 	@Override
 	public Form getForm(UUID id) {
-		String query = "Select id, name, date, time, location, description, cost, "
+		/*String query = "Select id, name, date, time, location, description, cost, "
 				+ "grade, type, justification, attachment, supervisorApproval, departmentHeadApproval, "
-				+ "bencoApproval from PendingForms where id = ?";
+				+ "bencoApproval from PendingForms where id = ?";*/
+		String query = "SELECT * FROM PendingForms where id = ?";
 		SimpleStatement s = new SimpleStatementBuilder(query).build();
 		BoundStatement bound = session.prepare(s).bind(id);
 		ResultSet rs = session.execute(bound);
@@ -62,9 +63,10 @@ public class FormDaoImpl implements FormDao{
 		f.setType(Event.valueOf(row.getString("type")));
 		f.setJustification(row.getString("justification"));
 		f.setAttachment(row.getString("attachment"));
-		f.setSupervisorApproval(Boolean.valueOf(row.getString("supervisorApproval")));
-		f.setDepartmentApproval(Boolean.valueOf(row.getString("supervisorApproval")));
-		f.setBencoApproval(Boolean.valueOf(row.getString("supervisorApproval")));
+		log.debug("Form prior to getting approval values: " + f);
+		f.setSupervisorApproval(row.getBoolean("supervisorApproval"));
+		f.setDepartmentApproval(row.getBoolean("departmentHeadApproval"));
+		f.setBencoApproval(row.getBoolean("bencoApproval"));
 		return f;
 	}
 	
@@ -130,17 +132,17 @@ public class FormDaoImpl implements FormDao{
 
 	@Override
 	public void updateForm(Form f) {
-		String query = "Update PendingForms set name = ?, date = ?, time = ?, location = ?, "
+		String query = "Update PendingForms set date = ?, time = ?, location = ?, "
 				+ "description = ?, cost = ?, grade = ?, type = ?, justification = ?, "
 				+ "attachment = ?, supervisorapproval = ?, departmentheadapproval = ?, "
-				+ "bencoapproval = ? where id = ?";
+				+ "bencoapproval = ? where id = ? and name = ?;";
 		SimpleStatement s = new SimpleStatementBuilder(query).setConsistencyLevel(DefaultConsistencyLevel.LOCAL_QUORUM).build();
 		log.debug(f);
 		BoundStatement bound = session.prepare(s)
-				.bind(f.getName(), f.getDate(), f.getTime(), f.getLocation(), f.getDescription(),
+				.bind(f.getDate(), f.getTime(), f.getLocation(), f.getDescription(),
 						f.getCost(), f.getGrade(), f.getType().toString(), f.getJustification(),
 						f.getAttachment(), f.getSupervisorApproval(), f.getDepartmentApproval(),
-						f.getBencoApproval(), f.getId());
+						f.getBencoApproval(), f.getId(), f.getName());
 		session.execute(bound);
 		return;
 	}
