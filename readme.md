@@ -97,5 +97,20 @@ and then run the Driver class again to load the program.
     "cost": [Cost of attendance]
 }``
 
+1. "name" field shoud contain the first and last name of user submitting the request
+2. "date" field shoud contain the day the event is taking place
+3. "time" field shoud contain the time of day the event is taking place
+4. "location" field shoud contain the place where the event is being held
+5. "type" field shoud contain the type of event the employee is seeking reimbursement for. The options are:
+    * COURSE
+    * SEMINAR
+    * CERT_PREP_CLASS
+    * CERTIFICATION
+    * TRAINING
+    * OTHER
+6. "description" field shoud contain a brief description of the event
+7. "justification" field shoud contain a brief description of how the event attending the event pertains to the company
+8. "cost" field shoud contain the raw cost of the event. The actual reimbursement amount awarded is determined by company rules based on the event type
+
 ### View all forms awaiting a User's approval
 `GET` to `http://localhost:8080/users/{username}/awaitingapproval`
