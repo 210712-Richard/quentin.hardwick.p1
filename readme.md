@@ -86,7 +86,7 @@ and then run the Driver class again to load the program.
 ### Submit a Reimbursement Request form
 * `POST` to `http://localhost:8080/users/{username}/forms`
 * In the request body, input as JSON:
-```{
+`{
     "name": "[First Last]",
     "date": "[YYYY-MM-DD]",
     "time": "[HH:MM]",
@@ -95,7 +95,7 @@ and then run the Driver class again to load the program.
     "description": "[Description of event]",
     "justification": "[How event pertains to work]",
     "cost": [Cost of attendance]
-}```
+}`
 
 1. "name" field shoud contain the first and last name of user submitting the request
 2. "date" field shoud contain the day the event is taking place
